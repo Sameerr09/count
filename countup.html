@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Count-Up Timer</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 10px;
+    text-align: center;
+  }
+  #countup {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0078d4; /* SharePoint blue */
+  }
+  marquee {
+    display: block;
+    margin-top: 20px;
+    font-size: 20px;
+    color: darkgreen;
+  }
+</style>
+</head>
+<body>
+  <div id="countup">Loading...</div>
+  <marquee behavior="scroll" direction="left" id="marqueeText">Waiting for timer...</marquee>
+
+  <script>
+    function getStartTimeCDT() {
+      var now = new Date();
+      var utcYear = now.getUTCFullYear();
+      var utcMonth = now.getUTCMonth();
+      var utcDate = now.getUTCDate();
+      return new Date(Date.UTC(utcYear, utcMonth, utcDate, 13, 0, 0)).getTime(); // 8 AM CDT = 13:00 UTC
+    }
+
+    var startDate = getStartTimeCDT();
+
+    function updateTimer() {
+      var now = new Date().getTime();
+      var elapsed = now - startDate;
+
+      if (elapsed < 0) {
+        document.getElementById("countup").innerHTML = "Starting soon...";
+        document.getElementById("marqueeText").textContent = "Starts at 8 AM CDT...";
+        return;
+      }
+
+      var days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+
+      var message = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+      document.getElementById("countup").innerHTML = message;
+      document.getElementById("marqueeText").textContent = message + " — Elapsed since 8 AM CDT (Zurich NA DR Exercise 2025)";
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
+	
