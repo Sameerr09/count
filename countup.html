@@ -3,62 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Count-Up Timer</title>
+  <title>Count-Up Timer (Debug)</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      text-align: center;
-    }
-
-    #countup {
-      font-size: 28px;
-      font-weight: bold;
-      color: #0078d4; /* SharePoint blue */
-      margin-bottom: 20px;
-    }
-
-    #marqueeWrapper {
-      width: 100%;
-      overflow: hidden;
-      white-space: nowrap;
-      box-sizing: border-box;
-    }
-
-    #marqueeText {
-      display: inline-block;
-      font-size: 20px;
-      color: darkgreen;
-      animation: scroll-left 15s linear infinite;
-    }
-
+    body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+    #countup { font-size: 28px; font-weight: bold; color: #0078d4; margin-bottom: 20px; }
+    #marqueeWrapper { width:100%; overflow:hidden; white-space:nowrap; box-sizing: border-box; }
+    #marqueeText { display:inline-block; font-size:20px; color:darkgreen; animation: scroll-left 15s linear infinite; }
     @keyframes scroll-left {
-      0% {
-        transform: translateX(100%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
     }
   </style>
 </head>
 <body>
   <div id="countup">Loading...</div>
-
   <div id="marqueeWrapper">
     <div id="marqueeText">Waiting for timer...</div>
   </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // CDT is UTC-5, so 8 AM CDT = 13:00 UTC
-      // Date.UTC: months are 0-indexed (September = 8)
+      console.log("DOM loaded");
+      // Set the start date for 8 AM CDT 15 Sep 2025
+      // CDT = UTC-5 → so 8 AM CDT is 13:00 UTC
       const startDate = new Date(Date.UTC(2025, 8, 15, 13, 0, 0)).getTime();
+      console.log("Computed startDate (ms):", startDate, "→", new Date(startDate).toUTCString());
 
       function updateTimer() {
         const now = new Date().getTime();
+        console.log("Now (ms):", now, "→", new Date(now).toUTCString());
         const elapsed = now - startDate;
-
+        console.log("Elapsed (ms):", elapsed);
+        
         const countupElem = document.getElementById("countup");
         const marqueeElem = document.getElementById("marqueeText");
 
@@ -75,7 +51,7 @@
 
         const message = `${days}d ${hours}h ${minutes}m ${seconds}s`;
         countupElem.innerHTML = message;
-        marqueeElem.textContent = `${message} — Elapsed since 15th Sept : 8:00 AM CDT (Zurich NA DR Exercise 2025)`;
+        marqueeElem.textContent = `${message} — Elapsed since 15th September 8:00 AM CDT (Zurich NA DR Exercise 2025)`;
       }
 
       updateTimer();
@@ -84,4 +60,3 @@
   </script>
 </body>
 </html>
-
