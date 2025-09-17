@@ -3,27 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Count-Up Timer (With Split + Remaining)</title>
+  <title>Count-Up Timer with Split and Remaining Time</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
-    #countup, #split, #consumed, #remaining {
-      font-size: 20px; margin: 10px 0;
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
     }
-    #countup { font-size: 28px; font-weight: bold; color: #0078d4; }
-    #split { color: #d40000; }
-    #consumed { color: #2e8b57; }
-    #remaining { color: #ff8c00; }
-    #marqueeWrapper { width:100%; overflow:hidden; white-space:nowrap; box-sizing: border-box; }
-    #marqueeText { display:inline-block; font-size:20px; color:darkgreen; animation: scroll-left 15s linear infinite; }
-   keyframes scroll-left {
-  0%   { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
 
-#marqueeText {
-  animation: scroll-left 15s linear infinite;
-}
+    #countup, #split, #consumed, #remaining {
+      font-size: 20px;
+      margin: 10px 0;
+    }
 
+    #countup {
+      font-size: 28px;
+      font-weight: bold;
+      color: #0078d4;
+    }
+
+    #split {
+      color: #d40000;
+    }
+
+    #consumed {
+      color: #2e8b57;
+    }
+
+    #remaining {
+      color: #ff8c00;
+    }
+
+    #marqueeWrapper {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+
+    #marqueeText {
+      display: inline-block;
+      font-size: 20px;
+      color: darkgreen;
+      animation: scroll-left 15s linear infinite;
+    }
+
+    @keyframes scroll-left {
+      0% {
+        transform: translateX(100%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
   </style>
 </head>
 <body>
@@ -31,16 +63,17 @@
   <div id="split"></div>
   <div id="consumed"></div>
   <div id="remaining"></div>
+
   <div id="marqueeWrapper">
     <div id="marqueeText">Waiting for timer...</div>
   </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Time Points
-      const startDate = new Date(Date.UTC(2025, 8, 15, 13, 0, 0)).getTime();  // 15 Sep 08:00 CDT
-      const splitDate = new Date(Date.UTC(2025, 8, 17, 17, 0, 0)).getTime();  // 17 Sep 12:00 CDT
-      const endDate   = new Date(Date.UTC(2025, 8, 20, 0, 0, 0)).getTime();   // 19 Sep 19:00 CDT
+      // Define all times in UTC to avoid timezone confusion
+      const startDate = new Date(Date.UTC(2025, 8, 15, 13, 0, 0)).getTime();  // 15 Sep 2025, 08:00 AM CDT
+      const splitDate = new Date(Date.UTC(2025, 8, 17, 17, 0, 0)).getTime();  // 17 Sep 2025, 12:00 PM CDT
+      const endDate = new Date(Date.UTC(2025, 8, 20, 0, 0, 0)).getTime();     // 19 Sep 2025, 07:00 PM CDT
 
       function formatDuration(ms) {
         const days = Math.floor(ms / (1000 * 60 * 60 * 24));
@@ -69,21 +102,38 @@
         }
 
         const elapsed = now - startDate;
-        const durationTotal = endDate - startDate;
+        const totalDuration = endDate - startDate;
         const timeRemaining = endDate - now;
 
-        // Display count-up
-        const message = formatDuration(elapsed);
-        countupElem.innerHTML = message;
+        // Main count-up display
+        const mainTime = formatDuration(elapsed);
+        countupElem.innerHTML = mainTime;
 
-        // Marquee text
-        marqueeElem.textContent = `${message} — Elapsed since 15th September 8:00 AM CDT (Zurich NA DR Exercise 2025)`;
+        // Marquee
+        marqueeElem.textContent = `${mainTime} — Elapsed since 15th September 8:00 AM CDT (Zurich NA DR Exercise 2025)`;
 
-        // Split Info
+        // Split time check
         if (now >= splitDate) {
-          const splitElapsed = s
+          const splitElapsed = splitDate - startDate;
+          splitElem.innerHTML = `⏱️ Time to Split (17th Sept, 12:00 Noon CDT): <strong>${formatDuration(splitElapsed)}</strong>`;
+        } else {
+          splitElem.innerHTML = `⏱️ Upcoming Split: 17th Sept, 12:00 Noon CDT`;
+        }
 
+        // Time consumed
+        consumedElem.innerHTML = `✅ <strong>Total Time Consumed:</strong> ${formatDuration(elapsed)}`;
 
+        // Time remaining
+        if (now < endDate) {
+          remainingElem.innerHTML = `⏳ <strong>Time Remaining:</strong> ${formatDuration(timeRemaining)}`;
+        } else {
+          remainingElem.innerHTML = `✅ <strong>Completed!</strong> Timer ended at 19th Sept, 7:00 PM CDT`;
+        }
+      }
 
-
-
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    });
+  </script>
+</body>
+</html>
