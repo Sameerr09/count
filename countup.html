@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Count-Up Timer with Split and Remaining Time</title>
+  <title>DR Exercise Duration Summary</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,7 +11,7 @@
       text-align: center;
     }
 
-    #countup, #split, #consumed, #remaining {
+    .section {
       font-size: 20px;
       margin: 10px 0;
     }
@@ -32,6 +32,10 @@
 
     #remaining {
       color: #ff8c00;
+    }
+
+    #total {
+      color: #6a1b9a;
     }
 
     #marqueeWrapper {
@@ -59,21 +63,27 @@
   </style>
 </head>
 <body>
-  <div id="countup">Loading...</div>
-  <div id="split"></div>
-  <div id="consumed"></div>
-  <div id="remaining"></div>
+  <h2>DR Exercise Summary</h2>
+  <div id="countup" class="section"></div>
+  <div id="split" class="section"></div>
+  <div id="consumed" class="section"></div>
+  <div id="remaining" class="section"></div>
+  <div id="total" class="section"></div>
 
   <div id="marqueeWrapper">
-    <div id="marqueeText">Waiting for timer...</div>
+    <div id="marqueeText"></div>
   </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Define all times in UTC to avoid timezone confusion
-      const startDate = new Date(Date.UTC(2025, 8, 15, 13, 0, 0)).getTime();  // 15 Sep 2025, 08:00 AM CDT
-      const splitDate = new Date(Date.UTC(2025, 8, 17, 17, 0, 0)).getTime();  // 17 Sep 2025, 12:00 PM CDT
-      const endDate = new Date(Date.UTC(2025, 8, 20, 0, 0, 0)).getTime();     // 19 Sep 2025, 07:00 PM CDT
+      // Define all fixed time points in UTC
+      const startDate = new Date(Date.UTC(2025, 8, 15, 13, 0, 0)); // 15 Sep 2025, 08:00 AM CDT
+      const splitDate = new Date(Date.UTC(2025, 8, 17, 17, 0, 0)); // 17 Sep 2025, 12:00 PM CDT
+      const endDate   = new Date(Date.UTC(2025, 8, 20, 0, 0, 0));  // 19 Sep 2025, 07:00 PM CDT
+
+      const frozenConsumed = splitDate - startDate;
+      const frozenRemaining = endDate - splitDate;
+      const totalDuration = endDate - startDate;
 
       function formatDuration(ms) {
         const days = Math.floor(ms / (1000 * 60 * 60 * 24));
@@ -83,56 +93,15 @@
         return `${days}d ${hours}h ${minutes}m ${seconds}s`;
       }
 
-      function updateTimer() {
-        const now = new Date().getTime();
+      // Inject frozen values into the DOM
+      document.getElementById("countup").innerHTML = `📌 DR Exercise Completed`;
+      document.getElementById("split").innerHTML = `⏱️ Time to Split (Start → Split): <strong>${formatDuration(frozenConsumed)}</strong>`;
+      document.getElementById("consumed").innerHTML = `✅ Total Time Consumed (Start → Split): <strong>${formatDuration(frozenConsumed)}</strong>`;
+      document.getElementById("remaining").innerHTML = `⏳ Total Time Remaining (Split → End): <strong>${formatDuration(frozenRemaining)}</strong>`;
+      document.getElementById("total").innerHTML = `📊 Full Duration (Start → End): <strong>${formatDuration(totalDuration)}</strong>`;
 
-        const countupElem = document.getElementById("countup");
-        const splitElem = document.getElementById("split");
-        const consumedElem = document.getElementById("consumed");
-        const remainingElem = document.getElementById("remaining");
-        const marqueeElem = document.getElementById("marqueeText");
-
-        if (now < startDate) {
-          countupElem.innerHTML = "Starting soon...";
-          splitElem.innerHTML = "";
-          consumedElem.innerHTML = "";
-          remainingElem.innerHTML = "";
-          marqueeElem.textContent = "Starts at 8:00 AM CDT on September 15, 2025...";
-          return;
-        }
-
-        const elapsed = now - startDate;
-        const totalDuration = endDate - startDate;
-        const timeRemaining = endDate - now;
-
-        // Main count-up display
-        const mainTime = formatDuration(elapsed);
-        countupElem.innerHTML = mainTime;
-
-        // Marquee
-        marqueeElem.textContent = `${mainTime} — Elapsed since 15th September 8:00 AM CDT (Zurich NA DR Exercise 2025)`;
-
-        // Split time check
-        if (now >= splitDate) {
-          const splitElapsed = splitDate - startDate;
-          splitElem.innerHTML = `⏱️ Time to Split (17th Sept, 12:00 Noon CDT): <strong>${formatDuration(splitElapsed)}</strong>`;
-        } else {
-          splitElem.innerHTML = `⏱️ Upcoming Split: 17th Sept, 12:00 Noon CDT`;
-        }
-
-        // Time consumed
-        consumedElem.innerHTML = `✅ <strong>Total Time Consumed:</strong> ${formatDuration(elapsed)}`;
-
-        // Time remaining
-        if (now < endDate) {
-          remainingElem.innerHTML = `⏳ <strong>Time Remaining:</strong> ${formatDuration(timeRemaining)}`;
-        } else {
-          remainingElem.innerHTML = `✅ <strong>Completed!</strong> Timer ended at 19th Sept, 7:00 PM CDT`;
-        }
-      }
-
-      updateTimer();
-      setInterval(updateTimer, 1000);
+      document.getElementById("marqueeText").textContent =
+        `Zurich NA DR Exercise 2025 ran from 15 Sep, 8:00 AM CDT to 19 Sep, 7:00 PM CDT — Total Duration: ${formatDuration(totalDuration)}`;
     });
   </script>
 </body>
