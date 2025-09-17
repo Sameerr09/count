@@ -15,7 +15,7 @@
     #remaining { color: #ff8c00; }
     #marqueeWrapper { width:100%; overflow:hidden; white-space:nowrap; box-sizing: border-box; }
     #marqueeText { display:inline-block; font-size:20px; color:darkgreen; animation: scroll-left 15s linear infinite; }
-    #keyframes scroll-left {
+    keyframes scroll-left {
       0% { transform: translateX(100%); }
       100% { transform: translateX(-100%); }
     }
@@ -77,5 +77,6 @@
         // Split Info
         if (now >= splitDate) {
           const splitElapsed = s
+
 
 
